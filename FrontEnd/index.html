@@ -18,9 +18,9 @@
 			<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 			<nav>
 				<ul>
-					<li>projets</li>
-					<li>contact</li>
-					<li>login</li>
+					<li><a href="#portfolio">projet</a></li>
+					<li><a href="#contact">contact</a></li>
+					<li><a href="#login">login</a></li>
 					<li>
 						<img
 							src="./assets/icons/instagram.png"
@@ -31,7 +31,7 @@
 			</nav>
 		</header>
 		<main>
-			<section id="introduction">
+			<!-- 			<section id="introduction">
 				<figure>
 					<img src="./assets/images/sophie-bluel.png" alt="" />
 				</figure>
@@ -62,6 +62,7 @@
 				<div class="filters-container">
 					<button class="filter">Tous</button>
 				</div>
+
 				<div class="gallery"></div>
 			</section>
 			<section id="contact">
@@ -80,6 +81,19 @@
 						rows="10"
 					></textarea>
 					<input type="submit" value="Envoyer" />
+				</form>
+			</section> -->
+
+			<section class="login-page">
+				<form action="post" type="submit" class="login-form">
+					<h2>Log In</h2>
+					<label for="email"
+						>E-mail<input type="email" id="email" /></label
+					><label for="password"
+						>Mot de passe <input type="password" id="password"
+					/></label>
+					<button type="submit">Se connecter</button>
+					<a href="#">Mot de passe oublié</a>
 				</form>
 			</section>
 		</main>

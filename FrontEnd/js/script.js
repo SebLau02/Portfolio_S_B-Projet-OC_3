@@ -30,10 +30,12 @@ const fetchFunc = () => {
 			// js, je les queryselector ici, une fois qu'ils sont
 			// tous présent dans le document
 
-			filters.forEach((filter) => {
+			filters.forEach((filter, index) => {
 				// filtrage des projects en fonction des filtres
 				filter.addEventListener("click", () => {
 					const filterCategory = filter.textContent;
+
+					//---------------------------------------------
 
 					projects.forEach((project) => {
 						// pour chaque projet, si son data-category ne correspond pas au
@@ -48,6 +50,14 @@ const fetchFunc = () => {
 							project.style = "display:none";
 						}
 					});
+
+					//---------------------------------------------
+
+					filters.forEach((filter) => {
+						filter.classList.add("active");
+					});
+
+					filter.classList.remove("active");
 				});
 			});
 		})
@@ -83,6 +93,7 @@ const createFilter = (category) => {
 	const newFilter = document.createElement("button");
 
 	newFilter.classList.add("filter");
+	newFilter.classList.add("active");
 	newFilter.innerText = category;
 
 	filterContainer.appendChild(newFilter);
