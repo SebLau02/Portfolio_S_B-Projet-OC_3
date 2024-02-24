@@ -104,7 +104,8 @@ const createProject = (project) => {
 	modalProjectDelete.innerHTML = trashCan;
 
 	modalFigure.appendChild(modalProjectDelete);
-	modalFigure.appendChild(newImg);
+	const newImgClone = newImg.cloneNode(true); // permet de créer une copie de newImg, évite de dupliquer du code
+	modalFigure.appendChild(newImgClone);
 
 	editProjectGallery.appendChild(modalFigure);
 };
@@ -199,7 +200,44 @@ loginAction();
 
 //---------------------------------------------
 
-const toggleModalAction = () => {
+const modalActions = () => {
 	// ouvrir ou fermer modal
 	// modal permet de gérer les projets
+
+	const toggleModalBtn = document.querySelectorAll(
+		".edit-projects__toggle-modale-btn",
+	);
+	const addPhotoBtn = document.querySelector(".edit-projects__add-photo-btn");
+	const editProjectsModal = document.querySelector(".edit-projects__modal");
+	const sendNewProjectBtn = document.querySelector(
+		".edit-projects__add-photo-form > button",
+	);
+	const requiredValues = document.querySelectorAll(".required-value");
+	let newProject = { image: null, title: null, category: null };
+
+	// addPhotoBtn.addEventListener("click", () => {});
+
+	toggleModalBtn.forEach((button) => {
+		button.addEventListener("click", () => {
+			editProjectsModal.classList.toggle("active");
+		});
+	});
+
+	requiredValues.forEach((input) => {
+		if (input.getAttribute("name") !== "category") {
+			input.addEventListener("input", (e) => {
+				console.log(e.target.value);
+			});
+		} else {
+			input.addEventListener("change", (e) => {
+				console.log(e.target.value);
+			});
+		}
+	});
+};
+
+modalActions();
+
+const onInput = (e) => {
+	console.log(e);
 };
