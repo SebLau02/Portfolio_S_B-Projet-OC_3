@@ -303,7 +303,7 @@ nav > ul li a:hover {
 
 button:not(
 		.edit-project__open-modal-btn,
-		.edit-projects__projects-photos-container > figure > button
+		.edit-projects__gallery-grid > figure > button
 	) {
 	position: relative;
 
@@ -416,7 +416,7 @@ footer nav ul {
 .edit-projects__modal.active {
 	display: flex;
 }
-.edit-projects__projects-photos-container {
+.edit-projects__gallery-grid {
 	display: grid;
 	grid-template-columns: repeat(5, 77px);
 	grid-gap: 30px 10px;
@@ -514,26 +514,26 @@ footer nav ul {
 
 	background-color: var(--light-grey);
 }
-.edit-projects__projects-photos-container img {
+.edit-projects__gallery-grid img {
 	width: 100%;
 	max-width: 100%;
 	height: 100%;
 
 	object-fit: cover;
 }
-.edit-projects__projects-photos-container > figure {
+.edit-projects__gallery-grid > figure {
 	position: relative;
 	display: block;
 	width: 100%;
 	height: 102px;
 }
-.edit-projects__projects-photos-container > figure > * {
+.edit-projects__gallery-grid > figure > * {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
-.edit-projects__projects-photos-container > figure > button {
+.edit-projects__gallery-grid > figure > button {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -567,6 +567,18 @@ footer nav ul {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
+}
+#image-label {
+	position: relative;
+}
+.uploaded-image {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	width: 129px;
+	height: 100%;
 }
 .edit-projects__add-photo-form > label {
 	width: 100%;

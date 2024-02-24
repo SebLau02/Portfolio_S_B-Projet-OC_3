@@ -103,7 +103,7 @@
 			</section>
 
 			<section id="login-page" class="login-page">
-				<form action="post" type="submit" class="login-form">
+				<form method="post" type="submit" class="login-form">
 					<h2>Log In</h2>
 
 					<label for="login-email"
@@ -136,32 +136,37 @@
 				role="dialog"
 				aria-labelledby="title-modal"
 			>
-				<section
-					class="edit-projects__section edit-projects__gallery-section"
-				>
-					<h3 id="title-modal">Galerie photo</h3>
-					<div
-						class="edit-projects__projects-photos-container edit-projects__section-main"
-					>
-						<!-- <button class="edit-projects__add-photo-btn">
-							Ajouter une photo
-						</button> -->
-					</div>
-
+				<nav class="edit-projects__modal-navigation">
+					<button class="modal-navigation__back-to-gallery"></button>
 					<button
 						class="edit-projects__toggle-modale-btn edit-projects__close-modale-btn"
 					>
 						<span></span>
 					</button>
+				</nav>
+
+				<section
+					class="edit-projects__section edit-projects__gallery-section active"
+				>
+					<h3 id="title-modal">Galerie photo</h3>
+					<div
+						class="edit-projects__projects-photos-container edit-projects__section-main"
+					>
+						<div class="edit-projects__gallery-grid"></div>
+						<button class="edit-projects__add-photo-btn">
+							Ajouter une photo
+						</button>
+					</div>
 				</section>
 
 				<section
-					class="edit-projects__section edit-projects__add-photo-section active"
+					class="edit-projects__section edit-projects__add-photo-section"
 				>
 					<h3>Ajout photo</h3>
 
 					<form
 						action="submit"
+						method="post"
 						class="edit-projects__add-photo-form edit-projects__section-main"
 					>
 						<label
@@ -194,6 +199,8 @@
 								accept="image/png, image/jpeg"
 								class="required-value"
 							/>
+
+							<img src="" alt="" class="uploaded-image" />
 						</label>
 
 						<label for="uploaded-file-title">
@@ -215,6 +222,7 @@
 								id="category"
 								class="required-value"
 							>
+								<option value="0"></option>
 								<option value="1">Objets</option>
 								<option value="2">Appartements</option>
 								<option value="3">Hotels & restaurants</option>
