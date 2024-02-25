@@ -215,12 +215,26 @@ button {
 	margin-right: 10px;
 }
 
+/* --------------------------------- */
+
 .filters-container {
 	gap: 10px;
 
 	margin: 50px;
 }
 
+.filters-container > .filter.active {
+	background: none;
+	color: var(--dark-green);
+	display: block;
+}
+.filter {
+	min-width: 100px;
+
+	line-height: 1;
+
+	padding: 10.5px 20px;
+}
 /* --------------------------------- */
 
 .gallery {
@@ -240,14 +254,6 @@ button {
 .gallery > figure > figcaption {
 	font-size: 13px;
 	margin-top: 5px;
-}
-
-/* --------------------------------- */
-
-.filters-container > .filter.active {
-	background: none;
-	color: var(--dark-green);
-	display: block;
 }
 
 /* --------------------------------- */

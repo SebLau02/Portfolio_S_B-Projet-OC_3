@@ -12,79 +12,79 @@ const isEditionMode = document.querySelectorAll(".is-edition-mode");
 
 const isUserLoggedCheck = () => {
 	// afficher le mode édition
-	loginToken &&
+
+	if (loginToken) {
 		isEditionMode.forEach((item) => {
 			item.classList.add("active");
 		});
-};
 
+		filterContainer.style = "visibility: hidden;";
+		filterContainer.setAttribute("aria-hidden", "true");
+	}
+};
 isUserLoggedCheck();
 //---------------------------------------------
 
-const getProjectsFromApi = () => {
-	fetch("http://localhost:5678/api/works")
-		.then((response) => response.json())
-		.then((data) => {
-			projectsFromApiData = data;
+const extractDataFromApi = (data) => {
+	let categories = [];
 
-			let categories = [];
+	// je parcours le tableau des project
+	data.forEach((project) => {
+		createProject(project);
 
-			// je parcours le tableau des project
-			data.forEach((project) => {
-				createProject(project);
+		//créer la liste de catégorie
+		if (!categories.includes(project.category.name)) {
+			categories.push(project.category.name);
+		}
+	});
 
-				if (!categories.includes(project.category.name)) {
-					categories.push(project.category.name);
+	//permet de créer les button filtre dynamiquement en js,
+	//en prévoyance de l'ajout de type dans le futur
+	categories.forEach((category) => {
+		createFilter(category);
+	});
+};
+
+const handleFilterSelection = () => {
+	const filters = document.querySelectorAll(".filter");
+	// comme je rajoute mes filtres et projets dynamiquement avec
+	// js, je les queryselector ici, une fois qu'ils sont
+	// tous présent dans le document
+
+	filters.forEach((filter, index) => {
+		// filtrage des projects en fonction des filtres
+		filter.addEventListener("click", () => {
+			const filterCategory = filter.textContent;
+
+			//---------------------------------------------
+
+			projects.forEach((project) => {
+				// pour chaque projet, si son data-category ne correspond pas au
+				// filtre, alors je le display none, s'il est égale à Tous alors
+				// tout les projets se mettent en display block
+				if (
+					project.dataset.category === filterCategory ||
+					filterCategory === "Tous"
+				) {
+					project.style = "display:block";
+				} else {
+					project.style = "display:none";
 				}
 			});
 
-			//permet de créer les button filtre dynamiquement en js,
-			//en prévoyance de l'ajout de type dans le futur
-			categories.forEach((category) => {
-				createFilter(category);
+			//---------------------------------------------
+
+			//changer background d'un filtre
+			filters.forEach((filter) => {
+				filter.classList.add("active");
 			});
 
-			const filters = document.querySelectorAll(".filter");
-			const projects = document.querySelectorAll(".gallery > figure");
-			// comme je rajoute mes filtres et projets dynamiquement avec
-			// js, je les queryselector ici, une fois qu'ils sont
-			// tous présent dans le document
-
-			filters.forEach((filter, index) => {
-				// filtrage des projects en fonction des filtres
-				filter.addEventListener("click", () => {
-					const filterCategory = filter.textContent;
-
-					//---------------------------------------------
-
-					projects.forEach((project) => {
-						// pour chaque projet, si son data-category ne correspond pas au
-						// filtre, alors je le display none, s'il est égale à Tous alors
-						// tout les projets se mettent en displayblock
-						if (
-							project.dataset.category === filterCategory ||
-							filterCategory === "Tous"
-						) {
-							project.style = "display:block";
-						} else {
-							project.style = "display:none";
-						}
-					});
-
-					//---------------------------------------------
-
-					filters.forEach((filter) => {
-						filter.classList.add("active");
-					});
-
-					filter.classList.remove("active");
-				});
-			});
-		})
-		.catch((error) => {
-			console.log(error);
+			filter.classList.remove("active");
 		});
+	});
 };
+
+//---------------------------------------------
 
 const createProject = (project) => {
 	//--------- cette section est réservé à la gallerie principale -------------
@@ -107,6 +107,8 @@ const createProject = (project) => {
 	newFigure.appendChild(newImg);
 	newFigure.appendChild(newFigcaption);
 
+	newFigure.setAttribute("aria-projectid", project.id);
+
 	// j'ajoute la figure comme nouvel enfant à notre gallerie
 	gallery.appendChild(newFigure);
 
@@ -121,9 +123,12 @@ const createProject = (project) => {
 	modalProjectDelete.innerHTML = trashCan;
 	modalProjectDelete.setAttribute("class", "remove-project-btn");
 	modalFigure.appendChild(modalProjectDelete);
+
 	const newImgClone = newImg.cloneNode(true); // permet de créer une copie de newImg, évite de dupliquer du code
 	modalProjectDelete.setAttribute("aria-projectid", project.id); // ajouter l'id du projet pour pouvoir l'identifier pour le supprimer
+	modalFigure.setAttribute("aria-projectid", project.id);
 	modalFigure.appendChild(newImgClone);
+	modalFigure.setAttribute("class", "modal-gallery-figure");
 
 	editProjectGallery.appendChild(modalFigure);
 };
@@ -141,6 +146,41 @@ const createFilter = (category) => {
 };
 
 //---------------------------------------------
+const getProjects = async () => {
+	try {
+		const projectsData = await crudRequest(
+			"http://localhost:5678/api/works",
+		);
+		extractDataFromApi(projectsData);
+
+		const projects = document.querySelectorAll(".gallery > figure");
+
+		handleFilterSelection();
+
+		const removeProjectBtn = document.querySelectorAll(
+			".remove-project-btn",
+		);
+
+		removeProjectBtn.forEach((button) => {
+			button.addEventListener("click", () => {
+				const projectId = button.getAttribute("aria-projectid");
+				deleteProject(projectId);
+
+				projects.forEach((project) => {
+					if (project.getAttribute("aria-projectid") == projectId) {
+						project.remove();
+					}
+				});
+			});
+		});
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+getProjects();
+
+//---------------------------------------------
 
 const loginAction = () => {
 	const loginLink = document.querySelector("nav > ul > :nth-child(3)");
@@ -154,6 +194,8 @@ const loginAction = () => {
 	navLinks.forEach((link) => {
 		link.addEventListener("click", () => {
 			if (link.textContent === "login") {
+				//si on clique sur le lien login
+				// la main page diplay none et la page login display block
 				mainSections[0].classList.add("active");
 				mainSections[1].classList.add("active");
 				loginLink.style = "font-weight:600;"; // permet de mettre le lien "login" en gras
@@ -215,7 +257,6 @@ const loginRequest = async (formData, mainSections, loginLink, footer) => {
 };
 
 //---------------------------------------------
-//---------------------------------------------
 
 const modalActions = () => {
 	// ouvrir ou fermer modal
@@ -244,7 +285,9 @@ const modalActions = () => {
 	toggleModalBtn.forEach((button) => {
 		button.addEventListener("click", () => {
 			editProjectsModal.classList.toggle("active"); // ouvrir la modale quand on clique sur modifier
+			editProjectSection[1].classList.remove("active"); // activer la section gallerie
 			editProjectSection[0].classList.add("active"); // activer la section gallerie
+			backToModalGalleryBtn.classList.remove("active");
 		});
 	});
 
@@ -305,40 +348,41 @@ const modalActions = () => {
 
 	newProjectForm.addEventListener("submit", (e) => {
 		e.preventDefault();
-		console.log(newProject);
 
-		fetch("http://localhost:5678/api/works", {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${loginToken}`,
-			},
-			body: JSON.stringify(newProject),
-		})
-			.then((response) => {
-				if (!response.ok) {
-					console.log(response);
-				}
-				return response.json();
-			})
-			.then((data) => {
-				console.log(data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+		console.log(new FormData(newProjectForm));
+
+		const formData = new FormData(newProjectForm);
+
+		postProjectRequest(formData);
+
+		// fetch("http://localhost:5678/api/works", {
+		// 	method: "post",
+		// 	headers: {
+		// 		"Content-Type": "application/json",
+		// 		Authorization: `Bearer ${loginToken}`,
+		// 	},
+		// 	body: formData,
+		// })
+		// 	.then((response) => {
+		// 		if (!response.ok) {
+		// 			console.log(response);
+		// 		}
+		// 		return response.json();
+		// 	})
+		// 	.then((data) => {
+		// 		console.log(data);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.log(error);
+		// 	});
 	});
 
 	// remove project function
-
-	const removeProjectBtn = document.querySelectorAll(".remove-project-btn");
 };
 
 //---------------------------------------------
 
-const removeProject = async () => {
-	const projectId = 15;
-
+const deleteProject = async (projectId) => {
 	const deleteUrl = `http://localhost:5678/api/works/${projectId}`;
 
 	const options = {
@@ -349,24 +393,57 @@ const removeProject = async () => {
 		},
 	};
 
+	const modalGalleryImages = document.querySelectorAll(
+		".modal-gallery-figure",
+	);
+
 	try {
 		const deleteRequest = await crudRequest(deleteUrl, options);
-		console.log(deleteRequest);
+
+		modalGalleryImages.forEach((figure) => {
+			if (figure.getAttribute("aria-projectid") == projectId) {
+				figure.remove();
+			}
+		});
+
+		alert(deleteRequest);
 	} catch (error) {
 		alert("Une erreur est survenue");
 	}
 };
 
-// removeProject();
-
 //---------------------------------------------
 
+const postProjectRequest = async (formData) => {
+	const postUrl = `http://localhost:5678/api/works`;
+	const options = {
+		method: "post",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${loginToken}`,
+		},
+		body: formData,
+	};
+
+	try {
+		const serverResponse = await crudRequest(postUrl, options);
+		console.log(serverResponse);
+	} catch (error) {
+		alert("Une erreur est survenue");
+	}
+};
+
+//---------------------------------------------
 async function crudRequest(url, options = {}) {
 	try {
 		const response = await fetch(url, options);
 		if (!response.ok) {
 			throw new Error("Une erreur est survenue lors de la requête.");
 		}
+		if (response.status === 204) {
+			return "Projet supprimé avec succès";
+		}
+
 		const data = await response.json();
 		return data;
 	} catch (error) {
@@ -377,20 +454,5 @@ async function crudRequest(url, options = {}) {
 
 //---------------------------------------------
 
-const getProjects = async () => {
-	try {
-		const projectsData = await crudRequest(
-			"http://localhost:5678/api/works",
-		);
-
-		console.log(projectsData);
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-//---------------------------------------------
-
-getProjectsFromApi();
 loginAction();
 modalActions();
