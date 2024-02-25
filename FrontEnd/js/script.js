@@ -23,12 +23,6 @@ const getProjectsFromApi = () => {
 				}
 			});
 
-			const removeProjectBtn = document.querySelectorAll(
-				".remove-project-btn",
-			);
-
-			console.log(removeProjectBtn);
-
 			//permet de créer les button filtre dynamiquement en js,
 			//en prévoyance de l'ajout de type dans le futur
 			categories.forEach((category) => {
@@ -312,6 +306,10 @@ const modalActions = () => {
 	});
 
 	// remove project function
+
+	const removeProjectBtn = document.querySelectorAll(".remove-project-btn");
+
+	console.log(removeProjectBtn);
 
 	const projectId = 15;
 

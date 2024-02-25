@@ -128,6 +128,9 @@ table {
 	border-spacing: 0;
 }*/
 /** end reset css**/
+
+/* ----------------reset et général----------------- */
+
 *,
 ::before,
 ::after {
@@ -137,8 +140,7 @@ table {
 }
 
 body {
-	max-width: 1140px;
-	min-height: 1024px;
+	max-width: 1440px;
 
 	margin: auto;
 
@@ -159,20 +161,8 @@ h2 {
 
 /* --------------------------------- */
 
-header {
-	display: flex;
-	justify-content: space-between;
-}
 main {
 	position: relative;
-}
-
-h1 {
-	display: flex;
-	flex-direction: column;
-	font-size: 22px;
-	font-weight: 800;
-	color: #b1663c;
 }
 
 h1 > span {
@@ -190,39 +180,102 @@ h2 {
 	font-size: 30px;
 	color: var(--dark-green);
 }
-nav ul {
+
+/* ---------------factorisation------------------ */
+
+.edit-projects__add-photo-form,
+.edit-projects__add-photo-form > label,
+#image-label,
+.header,
+.login-form,
+.login-form > label,
+.edit-projects__section,
+.header-bar,
+#introduction,
+.header-bar > nav ul {
 	display: flex;
+	justify-content: center;
 	align-items: center;
+}
+
+.edit-projects__add-photo-form,
+.edit-projects__add-photo-form > label,
+#image-label,
+.header,
+.login-form,
+.login-form > label,
+.edit-projects__section {
+	flex-direction: column;
+}
+
+/* --------------header------------------- */
+.header {
+	gap: 30px;
+
+	margin-bottom: 100px;
+}
+.edition-mode-bar {
+	background-color: #000000;
+
+	line-height: 1;
+
+	font-size: 16px;
+	text-align: center;
+	color: #ffffff;
+
+	width: 100%;
+
+	padding: 20px;
+}
+.edition-mode-bar > svg {
+	margin-right: 12px;
+}
+.header-bar {
+	justify-content: space-around;
+
+	width: 100%;
+}
+.header-bar > h1 {
+	display: flex;
+	flex-direction: column;
+	font-size: 22px;
+	font-weight: 800;
+	color: #b1663c;
+}
+.header-bar > nav ul {
 	list-style-type: none;
 }
-nav li {
+.header-bar > nav li {
 	padding: 0 10px;
 }
 
-nav > ul li a {
+.header-bar > nav > ul li a {
 	font-size: 16px;
 	color: #000000;
 
 	text-decoration: none;
 }
-nav > ul li a:hover {
+.header-bar > nav > ul li a:hover {
 	color: #b1663c;
 }
-#introduction {
-	display: flex;
-	align-items: center;
+.header-bar > nav ul li img {
+	width: 22px;
 }
+
+/* --------------------------------- */
+
 #introduction figure {
-	flex: 1;
 }
 #introduction img {
 	display: block;
 	margin: auto;
-	width: 80%;
+	width: 100%;
+	max-width: 474px;
 }
 
 #introduction article {
 	flex: 1;
+	max-width: 404px;
 }
 #introduction h2 {
 	margin-bottom: 1em;
@@ -344,17 +397,9 @@ button:not(
 	display: block;
 }
 .login-form {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
 	gap: 35px;
 }
 .login-form > label {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
 	gap: 10px;
 
 	max-width: 379px;
@@ -427,9 +472,6 @@ footer nav ul {
 	position: relative;
 
 	display: none;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
 
 	transform: translateY(70%);
 
@@ -560,14 +602,6 @@ footer nav ul {
 	gap: 30px;
 }
 
-.edit-projects__add-photo-form,
-.edit-projects__add-photo-form > label,
-#image-label {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-}
 #image-label {
 	position: relative;
 }
