@@ -1,136 +1,3 @@
-/* http://meyerweb.com/eric/tools/css/reset/
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-
-/*html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}*/
-/* HTML5 display-role reset for older browsers */
-/*article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-menu,
-nav,
-section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol,
-ul {
-	list-style: none;
-}
-blockquote,
-q {
-	quotes: none;
-}
-blockquote:before,
-blockquote:after,
-q:before,
-q:after {
-	content: "";
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}*/
-/** end reset css**/
-
-/* ----------------reset et général----------------- */
-
 *,
 ::before,
 ::after {
@@ -140,6 +7,8 @@ table {
 }
 
 body {
+	position: relative;
+
 	max-width: 1440px;
 	min-height: 100vh;
 
@@ -163,7 +32,6 @@ h2 {
 /* --------------------------------- */
 
 main {
-	position: relative;
 }
 
 h1 > span {
@@ -195,7 +63,10 @@ h2 {
 #introduction,
 .header-bar > nav ul,
 .title_edit-project,
-.filters-container {
+.filters-container,
+.edits-projects__back-to-gallery-btn,
+.edit-projects__modal-navigation,
+.edit-projects__section-main {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -209,6 +80,21 @@ h2 {
 .login-form > label,
 .edit-projects__section {
 	flex-direction: column;
+}
+
+button {
+	position: relative;
+
+	font-weight: 700;
+	font-size: 14px;
+
+	background: var(--dark-green);
+	color: white;
+
+	text-align: center;
+
+	border-radius: 60px;
+	border: 1px solid var(--dark-green);
 }
 
 /* --------------header------------------- */
@@ -269,8 +155,15 @@ h2 {
 .header-bar > nav > ul li a:hover {
 	color: #b1663c;
 }
+
 .header-bar > nav ul li img {
 	width: 22px;
+}
+
+/* --------------------------------- */
+
+.intro-portfolio-contact.active {
+	display: none;
 }
 
 /* --------------------------------- */
@@ -309,12 +202,15 @@ h2 {
 	display: none;
 
 	border: none;
+
 	background: none;
-	font-size: 14px;
+
+	color: #000000;
 }
 .title_edit-project > .edit-project__open-modal-btn.active {
 	display: block;
 }
+
 .edit-project__open-modal-btn > svg {
 	margin-right: 10px;
 }
@@ -348,29 +244,6 @@ h2 {
 
 /* --------------------------------- */
 
-button:not(
-		.edit-project__open-modal-btn,
-		.edit-projects__gallery-grid > figure > button
-	) {
-	position: relative;
-
-	font-weight: 700;
-	font-size: 16px;
-	color: var(--dark-green);
-
-	background: var(--dark-green);
-	color: white;
-
-	padding: 0px 9px;
-
-	min-width: 100px;
-	height: 37px;
-
-	text-align: center;
-
-	border-radius: 60px;
-	border: 1px solid var(--dark-green);
-}
 .filters-container > .filter.active {
 	background: none;
 	color: var(--dark-green);
@@ -433,16 +306,16 @@ button:not(
 
 /* --------------------------------- */
 
-footer {
+.footer {
 	width: 100%;
 	background-color: #ffffff;
 }
-footer.active {
+.footer.active {
 	position: fixed;
 	bottom: 0;
 	left: 0;
 }
-footer nav ul {
+.footer nav ul {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
@@ -470,6 +343,7 @@ footer nav ul {
 .login-page.active {
 	display: block;
 }
+
 .login-form {
 	gap: 35px;
 }
@@ -502,6 +376,8 @@ footer nav ul {
 	font-weight: 600;
 }
 
+/* ----------------modale----------------- */
+
 .edit-projects__modal {
 	position: absolute;
 	top: 50%;
@@ -516,8 +392,20 @@ footer nav ul {
 
 	background: #0000004d;
 }
+
 .edit-projects__modal.active {
 	display: flex;
+}
+.modal__main-container {
+	width: 100%;
+	max-width: 630px;
+	max-height: 688px;
+
+	transform: translateY(95%);
+
+	border-radius: 10px;
+
+	background: #ffffff;
 }
 .edit-projects__gallery-grid {
 	display: grid;
@@ -526,19 +414,11 @@ footer nav ul {
 
 	width: fit-content;
 }
-.edit-projects__section {
-	position: relative;
 
+.edit-projects__section {
 	display: none;
 
-	transform: translateY(70%);
-
 	width: 100%;
-	max-width: 630px;
-	height: 100%;
-	max-height: 688px;
-
-	background: #ffffff;
 }
 
 .edit-projects__gallery-section.active,
@@ -546,33 +426,50 @@ footer nav ul {
 	display: flex;
 }
 
-.edit-projects__add-photo-btn {
-	padding: 0 20px;
+/* -----------------bouton retour et fermet modale---------------- */
+
+.edit-projects__modal-navigation {
+	justify-content: space-between;
+
+	width: 90%;
+
+	margin: auto;
+	padding: 24px 0 18px;
 }
-.edit-projects__close-modale-btn {
-	/*	position: absolute;
-	top: 10%;
-	left: 80%;
-	transform: translate(-50%, -50%);*/
+.modal-navigation-btn {
+	position: relative;
+	width: 24px;
+	height: 24px;
+
+	padding: 0;
 
 	border: none;
-	background-color: transparent;
+	background: none;
 }
-.edit-projects__close-modale-btn > span {
-	position: absolute;
-	top: 50%;
+.edits-projects__back-to-gallery-btn {
+	visibility: hidden;
+}
+.edits-projects__back-to-gallery-btn.active {
+	visibility: visible;
+}
+
+.modal-navigation-btn > span {
+	position: relative;
+	top: 5%;
 	left: 50%;
 	transform: translate(-50%, -50%) rotate(45deg);
 
-	width: 17px;
+	display: block;
+
+	width: 61%;
 	height: 2px;
 
-	border-radius: 2px;
+	border-radius: 1px;
 
 	background-color: #000000;
 }
 
-.edit-projects__close-modale-btn > span::after {
+.modal-navigation-btn > span::after {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -593,13 +490,18 @@ footer nav ul {
 }
 .edit-projects__section-main {
 	position: relative;
+	flex-direction: column;
 
 	margin: 40px 0 0;
 }
-.edit-projects__section-main > button {
-	margin-top: 50px;
+.edit-projects__add-photo-btn,
+.add-photo-form__submit-btn {
+	width: 237px;
 
-	font-size: 14px;
+	line-height: 1;
+
+	padding: 10px 0;
+	margin: 45px 0 0;
 }
 .edit-projects__section-main::after {
 	position: absolute;
@@ -614,6 +516,13 @@ footer nav ul {
 
 	background-color: var(--light-grey);
 }
+.edit-projects__projects-photos-container::after {
+	bottom: 0;
+}
+.edit-projects__projects-photos-container > .edit-projects__add-photo-btn {
+	transform: translateY(70px);
+}
+
 .edit-projects__gallery-grid img {
 	width: 100%;
 	max-width: 100%;
@@ -651,11 +560,13 @@ footer nav ul {
 	background: #000000;
 }
 
-/* --------------------------------- */
+/* ---------------form------------------ */
+
 .edit-projects__add-photo-section {
 }
 .edit-projects__add-photo-form {
-	min-width: 425px;
+	max-width: 425px;
+	width: 100%;
 
 	gap: 30px;
 }
@@ -733,8 +644,7 @@ footer nav ul {
 
 .edit-projects__add-photo-form > button {
 	background-color: var(--light-grey);
-
-	width: 237px;
+	border: none;
 }
 .edit-projects__add-photo-form > button.active {
 	background-color: var(--dark-green);

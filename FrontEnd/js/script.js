@@ -8,6 +8,18 @@ let loginToken = sessionStorage.loginToken ? sessionStorage.loginToken : null;
 let projectsFromApiData = new Array();
 
 //---------------------------------------------
+const isEditionMode = document.querySelectorAll(".is-edition-mode");
+
+const isUserLoggedCheck = () => {
+	// afficher le mode édition
+	loginToken &&
+		isEditionMode.forEach((item) => {
+			item.classList.add("active");
+		});
+};
+
+isUserLoggedCheck();
+//---------------------------------------------
 
 const getProjectsFromApi = () => {
 	fetch("http://localhost:5678/api/works")
@@ -134,22 +146,25 @@ const loginAction = () => {
 	const loginLink = document.querySelector("nav > ul > :nth-child(3)");
 	const sections = document.querySelectorAll("section");
 	const loginForm = document.querySelector(".login-form");
+	const mainSections = document.querySelectorAll(".main-section");
+	const navLinks = document.querySelectorAll(".header-bar > nav ul li a");
+	const footer = document.querySelector(".footer");
 
-	const iframe = document.querySelector(".iframe");
-
-	loginLink.addEventListener("click", () => {
-		iframe.src = "./login/login.html";
-	});
-
-	// permet de mettre le lien "login" en gras
-	loginLink.addEventListener("click", () => {
-		// loginLink.style = "font-weight:600;";
-		// sections.forEach((section) => {
-		// 	section.classList.add("active");
-		// 	if (section.getAttribute("id") !== "login-page") {
-		// 		section.style = "display:none";
-		// 	}
-		// });
+	// naviguer sur les liens
+	navLinks.forEach((link) => {
+		link.addEventListener("click", () => {
+			if (link.textContent === "login") {
+				mainSections[0].classList.add("active");
+				mainSections[1].classList.add("active");
+				loginLink.style = "font-weight:600;"; // permet de mettre le lien "login" en gras
+				footer.classList.add("active");
+			} else {
+				mainSections[0].classList.remove("active");
+				mainSections[1].classList.remove("active");
+				loginLink.style = "font-weight:none;";
+				footer.classList.remove("active");
+			}
+		});
 	});
 
 	// fonction d'envoi des données pour se connecter
@@ -161,10 +176,45 @@ const loginAction = () => {
 		loginFormData.email = e.target[0].value;
 		loginFormData.password = e.target[1].value;
 
-		loginRequest(loginFormData, sections);
+		loginRequest(loginFormData, mainSections, loginLink, footer);
 	});
 };
 
+// fonction de connection
+
+const loginRequest = async (formData, mainSections, loginLink, footer) => {
+	const loginUrl = `http://localhost:5678/api/users/login`;
+	const options = {
+		method: "post",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(formData),
+	};
+
+	try {
+		const apiResponse = await crudRequest(loginUrl, options);
+
+		if (apiResponse) {
+			alert("Connection réussie");
+			sessionStorage.setItem("loginToken", apiResponse.token);
+			loginToken = apiResponse.token;
+
+			isUserLoggedCheck();
+
+			//permet de rediriger vers la page principale
+			mainSections[0].classList.remove("active");
+			mainSections[1].classList.remove("active");
+
+			loginLink.style = "font-weight:none;"; //enlever le font weight du lien login
+			footer.classList.remove("active"); // fixer le footer en bas
+		}
+	} catch (error) {
+		alert("Erreur dans l’identifiant ou le mot de passe");
+	}
+};
+
+//---------------------------------------------
 //---------------------------------------------
 
 const modalActions = () => {
@@ -184,6 +234,10 @@ const modalActions = () => {
 		".edit-projects__section ",
 	);
 
+	const backToModalGalleryBtn = document.querySelector(
+		".edits-projects__back-to-gallery-btn",
+	);
+
 	let newProject = { image: null, title: null, category: null };
 
 	// ouvrir la modale
@@ -198,6 +252,13 @@ const modalActions = () => {
 	addPhotoBtn.addEventListener("click", () => {
 		editProjectSection[0].classList.remove("active"); // ferme la gallerie
 		editProjectSection[1].classList.add("active"); // j'ouvre le formulaire d'ajout
+		backToModalGalleryBtn.classList.add("active");
+	});
+
+	backToModalGalleryBtn.addEventListener("click", () => {
+		editProjectSection[0].classList.add("active"); // ouvre la gallerie
+		editProjectSection[1].classList.remove("active"); // fermer le formulaire d'ajout
+		backToModalGalleryBtn.classList.remove("active");
 	});
 
 	// permet de récupérer les données entrée
@@ -325,41 +386,6 @@ const getProjects = async () => {
 		console.log(projectsData);
 	} catch (error) {
 		console.log(error);
-	}
-};
-
-// getProjects();
-
-//---------------------------------------------
-
-const loginRequest = async (formData, sections) => {
-	const loginUrl = `http://localhost:5678/api/users/login`;
-	const options = {
-		method: "post",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(formData),
-	};
-
-	try {
-		const apiResponse = await crudRequest(loginUrl, options);
-
-		if (apiResponse) {
-			alert("Connection réussie");
-			sessionStorage.setItem("loginToken", apiResponse.token);
-
-			//permet de rediriger vers la page principale
-			sections.forEach((section) => {
-				section.classList.remove("active");
-
-				if (section.getAttribute("id") !== "login-page") {
-					section.style = "display:null";
-				}
-			});
-		}
-	} catch (error) {
-		alert("Paire d'identifiant incorrect");
 	}
 };
 
