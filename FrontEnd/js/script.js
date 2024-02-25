@@ -5,6 +5,7 @@ const editProjectGallery = document.querySelector(
 );
 
 let loginToken = sessionStorage.loginToken ? sessionStorage.loginToken : null;
+let projectsFromApiData = new Array();
 
 //---------------------------------------------
 
@@ -12,6 +13,8 @@ const getProjectsFromApi = () => {
 	fetch("http://localhost:5678/api/works")
 		.then((response) => response.json())
 		.then((data) => {
+			projectsFromApiData = data;
+
 			let categories = [];
 
 			// je parcours le tableau des project
@@ -125,80 +128,42 @@ const createFilter = (category) => {
 	filterContainer.appendChild(newFilter);
 };
 
-getProjectsFromApi();
-
 //---------------------------------------------
 
 const loginAction = () => {
 	const loginLink = document.querySelector("nav > ul > :nth-child(3)");
 	const sections = document.querySelectorAll("section");
 	const loginForm = document.querySelector(".login-form");
-	const formInputs = document.querySelectorAll(".login-form > label > input");
 
-	const formData = { email: null, password: null };
+	const iframe = document.querySelector(".iframe");
+
+	loginLink.addEventListener("click", () => {
+		iframe.src = "./login/login.html";
+	});
 
 	// permet de mettre le lien "login" en gras
 	loginLink.addEventListener("click", () => {
-		loginLink.style = "font-weight:600;";
-
-		sections.forEach((section) => {
-			section.classList.add("active");
-
-			if (section.getAttribute("id") !== "login-page") {
-				section.style = "display:none";
-			}
-		});
-	});
-
-	// récupérer les info d'authentification
-	formInputs.forEach((input) => {
-		input.addEventListener("input", (e) => {
-			if (input.getAttribute("type") === "email") {
-				formData.email = e.target.value;
-			} else {
-				formData.password = e.target.value;
-			}
-		});
+		// loginLink.style = "font-weight:600;";
+		// sections.forEach((section) => {
+		// 	section.classList.add("active");
+		// 	if (section.getAttribute("id") !== "login-page") {
+		// 		section.style = "display:none";
+		// 	}
+		// });
 	});
 
 	// fonction d'envoi des données pour se connecter
 	loginForm.addEventListener("submit", (e) => {
 		e.preventDefault();
 
-		fetch("http://localhost:5678/api/users/login", {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(formData),
-		})
-			.then((response) => {
-				if (!response.ok) {
-					alert("Paire identifiant incorrect");
-				}
-				return response.json();
-			})
-			.then((data) => {
-				if (data.token) {
-					alert("Connection réussie");
-					sessionStorage.setItem("loginToken", data.token);
+		let loginFormData = new Object();
 
-					sections.forEach((section) => {
-						section.classList.remove("active");
+		loginFormData.email = e.target[0].value;
+		loginFormData.password = e.target[1].value;
 
-						if (section.getAttribute("id") !== "login-page") {
-							section.style = "display:null";
-						}
-					});
-				}
-			})
-			.catch((error) => {
-				alert("Une erreur est survenue");
-			});
+		loginRequest(loginFormData, sections);
 	});
 };
-
-loginAction();
 
 //---------------------------------------------
 
@@ -243,8 +208,6 @@ const modalActions = () => {
 		if (typeInput === "file") {
 			input.addEventListener("change", (e) => {
 				const uploadedImage = e.target.files[0];
-
-				console.log(uploadedImage);
 
 				newProject[typeValue] = uploadedImage;
 
@@ -308,29 +271,100 @@ const modalActions = () => {
 	// remove project function
 
 	const removeProjectBtn = document.querySelectorAll(".remove-project-btn");
+};
 
-	console.log(removeProjectBtn);
+//---------------------------------------------
 
+const removeProject = async () => {
 	const projectId = 15;
 
 	const deleteUrl = `http://localhost:5678/api/works/${projectId}`;
-};
 
-const removeProject = (url, projectId, loginToken) => {
-	fetch(url, {
+	const options = {
 		method: "delete",
 		headers: {
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${loginToken}`,
 		},
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			console.log(data);
-		})
-		.catch((error) => {
-			alert("Une erreur s'est produite");
-		});
+	};
+
+	try {
+		const deleteRequest = await crudRequest(deleteUrl, options);
+		console.log(deleteRequest);
+	} catch (error) {
+		alert("Une erreur est survenue");
+	}
 };
 
+// removeProject();
+
+//---------------------------------------------
+
+async function crudRequest(url, options = {}) {
+	try {
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new Error("Une erreur est survenue lors de la requête.");
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Erreur :", error);
+		throw error;
+	}
+}
+
+//---------------------------------------------
+
+const getProjects = async () => {
+	try {
+		const projectsData = await crudRequest(
+			"http://localhost:5678/api/works",
+		);
+
+		console.log(projectsData);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+// getProjects();
+
+//---------------------------------------------
+
+const loginRequest = async (formData, sections) => {
+	const loginUrl = `http://localhost:5678/api/users/login`;
+	const options = {
+		method: "post",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(formData),
+	};
+
+	try {
+		const apiResponse = await crudRequest(loginUrl, options);
+
+		if (apiResponse) {
+			alert("Connection réussie");
+			sessionStorage.setItem("loginToken", apiResponse.token);
+
+			//permet de rediriger vers la page principale
+			sections.forEach((section) => {
+				section.classList.remove("active");
+
+				if (section.getAttribute("id") !== "login-page") {
+					section.style = "display:null";
+				}
+			});
+		}
+	} catch (error) {
+		alert("Paire d'identifiant incorrect");
+	}
+};
+
+//---------------------------------------------
+
+getProjectsFromApi();
+loginAction();
 modalActions();

@@ -141,6 +141,7 @@ table {
 
 body {
 	max-width: 1440px;
+	min-height: 100vh;
 
 	margin: auto;
 
@@ -192,7 +193,9 @@ h2 {
 .edit-projects__section,
 .header-bar,
 #introduction,
-.header-bar > nav ul {
+.header-bar > nav ul,
+.title_edit-project,
+.filters-container {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -210,11 +213,17 @@ h2 {
 
 /* --------------header------------------- */
 .header {
-	gap: 30px;
-
 	margin-bottom: 100px;
 }
+.header.active {
+	gap: 30px;
+}
+.header.active .edition-mode-bar {
+	visibility: visible;
+}
 .edition-mode-bar {
+	visibility: hidden;
+
 	background-color: #000000;
 
 	line-height: 1;
@@ -231,7 +240,9 @@ h2 {
 	margin-right: 12px;
 }
 .header-bar {
-	justify-content: space-around;
+	max-width: 1140px;
+
+	justify-content: space-between;
 
 	width: 100%;
 }
@@ -264,6 +275,12 @@ h2 {
 
 /* --------------------------------- */
 
+#introduction {
+	gap: 75px;
+
+	margin-bottom: 115px;
+}
+
 #introduction figure {
 }
 #introduction img {
@@ -278,78 +295,55 @@ h2 {
 	max-width: 404px;
 }
 #introduction h2 {
-	margin-bottom: 1em;
+	margin-bottom: 0.7em;
 }
 
 #introduction p {
-	margin-bottom: 0.5em;
+	margin-bottom: 0.9em;
 }
 
 .title_edit-project {
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	gap: 30px;
 }
 .title_edit-project > .edit-project__open-modal-btn {
+	display: none;
+
 	border: none;
 	background: none;
 	font-size: 14px;
+}
+.title_edit-project > .edit-project__open-modal-btn.active {
+	display: block;
 }
 .edit-project__open-modal-btn > svg {
 	margin-right: 10px;
 }
 
 .filters-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	gap: 10px;
+
+	margin: 50px;
 }
+
+/* --------------------------------- */
+
 .gallery {
-	width: 100%;
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	grid-column-gap: 20px;
-	grid-row-gap: 20px;
+	grid-template-columns: repeat(3, 305px);
+	grid-gap: 20px;
+
+	width: fit-content;
+
+	margin: auto;
 }
 
 .gallery img {
 	width: 100%;
 }
-#contact {
-	width: 50%;
-	margin: auto;
-}
-#contact > * {
-	text-align: center;
-}
-#contact > p {
-	font-size: 16px;
-}
-#contact h2 {
-	margin-bottom: 20px;
-}
-#contact form {
-	text-align: left;
-	margin-top: 30px;
-	display: flex;
-	flex-direction: column;
-}
 
-#contact input {
-	height: 50px;
-	font-size: 1.2em;
-	border: none;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
-}
-#contact label {
-	margin: 2em 0 1em 0;
-	font-weight: 500;
-}
-#contact textarea {
-	border: none;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+.gallery > figure > figcaption {
+	font-size: 13px;
+	margin-top: 5px;
 }
 
 /* --------------------------------- */
@@ -382,6 +376,86 @@ button:not(
 	color: var(--dark-green);
 	display: block;
 }
+
+/* --------------------------------- */
+
+#contact {
+	width: 50%;
+
+	margin: 60px auto;
+
+	max-width: 379px;
+}
+#contact > * {
+	text-align: center;
+}
+#contact > p {
+	font-size: 16px;
+}
+#contact h2 {
+	margin-bottom: 20px;
+}
+#contact form {
+	text-align: left;
+
+	margin-top: 30px;
+
+	display: flex;
+	flex-direction: column;
+
+	color: #3d3d3d;
+}
+
+#contact input {
+	height: 50px;
+
+	font-size: 1.2em;
+
+	border: none;
+
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+#contact label {
+	margin: 2.2em 0 1em;
+	font-weight: 500;
+}
+#contact textarea {
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+#contact > form .send-message-btn {
+	max-width: 179px;
+	width: 100%;
+
+	margin: 40px auto;
+}
+
+/* --------------------------------- */
+
+footer {
+	width: 100%;
+	background-color: #ffffff;
+}
+footer.active {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+}
+footer nav ul {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+
+	list-style: none;
+	font-weight: 300;
+
+	height: 60px;
+
+	padding-right: 107px;
+}
+
+/* --------------------------------- */
 
 /* login-page */
 
@@ -427,22 +501,6 @@ button:not(
 
 	font-weight: 600;
 }
-/* --------------------------------- */
-footer {
-	/*	position: fixed;
-	bottom: 0;
-	left: 0;*/
-
-	width: 100%;
-	background-color: white;
-}
-footer nav ul {
-	display: flex;
-	justify-content: flex-end;
-	height: 60px;
-}
-
-/* --------------------------------- */
 
 .edit-projects__modal {
 	position: absolute;

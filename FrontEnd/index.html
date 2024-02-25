@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 	<head>
 		<meta charset="UTF-8" />
@@ -33,7 +33,7 @@
 				<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 				<nav>
 					<ul>
-						<li><a href="#portfolio">projet</a></li>
+						<li><a href="#portfolio">projets</a></li>
 						<li><a href="#contact">contact</a></li>
 						<li><a href="#login">login</a></li>
 						<li>
@@ -47,6 +47,7 @@
 			</div>
 		</header>
 		<main>
+			<!-- <iframe src="" frameborder="1" class="iframe"></iframe> -->
 			<section id="introduction">
 				<figure>
 					<img src="./assets/images/sophie-bluel.png" alt="" />
@@ -74,9 +75,9 @@
 			</section>
 			<section id="portfolio">
 				<div class="title_edit-project">
-					<h2>Mes Projets</h2>
+					<h2>Mes projets</h2>
 					<button
-						class="edit-projects__toggle-modale-btn edit-project__open-modal-btn"
+						class="edit-projects__toggle-modale-btn edit-project__open-modal-btn active"
 					>
 						<svg
 							width="16"
@@ -114,12 +115,14 @@
 						cols="30"
 						rows="10"
 					></textarea>
-					<button type="submit">Envoyer</button>
+					<button type="submit" class="send-message-btn">
+						Envoyer
+					</button>
 				</form>
 			</section>
 
 			<section id="login-page" class="login-page">
-				<form method="post" type="submit" class="login-form">
+				<form method="post" class="login-form">
 					<h2>Log In</h2>
 
 					<label for="login-email"
@@ -127,8 +130,10 @@
 						><input
 							type="email"
 							id="login-email"
+							name="email"
 							autocomplete="email"
 							required="required"
+							value="sophie.bluel@test.tld"
 					/></label>
 
 					<label for="password"
@@ -136,6 +141,7 @@
 						><input
 							type="password"
 							id="password"
+							name="password"
 							autocomplete="current-password"
 							required="required"
 					/></label>
@@ -248,12 +254,11 @@
 					</form>
 				</section>
 			</aside>
-			-->
 		</main>
 		<footer>
 			<nav>
 				<ul>
-					<li>Mentions Légales</li>
+					<li>Mentions légales</li>
 				</ul>
 			</nav>
 		</footer>
