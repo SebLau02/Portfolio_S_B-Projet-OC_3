@@ -1,8 +1,10 @@
 const gallery = document.querySelector(".gallery");
 const filterContainer = document.querySelector(".filters-container");
 const editProjectGallery = document.querySelector(
-	".edit-projects__projects-photos-container",
+	".edit-projects__gallery-grid",
 );
+
+let loginToken = sessionStorage.loginToken ? sessionStorage.loginToken : null;
 
 //---------------------------------------------
 
@@ -102,13 +104,16 @@ const createProject = (project) => {
 </svg>`;
 
 	modalProjectDelete.innerHTML = trashCan;
-
+	modalProjectDelete.setAttribute("class", "remove-project-btn");
 	modalFigure.appendChild(modalProjectDelete);
 	const newImgClone = newImg.cloneNode(true); // permet de créer une copie de newImg, évite de dupliquer du code
+	modalProjectDelete.setAttribute("aria-projectid", project.id); // ajouter l'id du projet pour pouvoir l'identifier pour le supprimer
 	modalFigure.appendChild(newImgClone);
 
 	editProjectGallery.appendChild(modalFigure);
 };
+
+//---------------------------------------------
 
 const createFilter = (category) => {
 	const newFilter = document.createElement("button");
@@ -131,9 +136,6 @@ const loginAction = () => {
 	const formInputs = document.querySelectorAll(".login-form > label > input");
 
 	const formData = { email: null, password: null };
-	let loginToken = sessionStorage.loginToken
-		? sessionStorage.loginToken
-		: null;
 
 	// permet de mettre le lien "login" en gras
 	loginLink.addEventListener("click", () => {
@@ -213,31 +215,122 @@ const modalActions = () => {
 		".edit-projects__add-photo-form > button",
 	);
 	const requiredValues = document.querySelectorAll(".required-value");
+	const editProjectSection = document.querySelectorAll(
+		".edit-projects__section ",
+	);
+
 	let newProject = { image: null, title: null, category: null };
 
-	// addPhotoBtn.addEventListener("click", () => {});
-
+	// ouvrir la modale
 	toggleModalBtn.forEach((button) => {
 		button.addEventListener("click", () => {
-			editProjectsModal.classList.toggle("active");
+			editProjectsModal.classList.toggle("active"); // ouvrir la modale quand on clique sur modifier
+			editProjectSection[0].classList.add("active"); // activer la section gallerie
 		});
 	});
 
+	// switcher entre les deux section de la modale
+	addPhotoBtn.addEventListener("click", () => {
+		editProjectSection[0].classList.remove("active"); // ferme la gallerie
+		editProjectSection[1].classList.add("active"); // j'ouvre le formulaire d'ajout
+	});
+
+	// permet de récupérer les données entrée
 	requiredValues.forEach((input) => {
-		if (input.getAttribute("name") !== "category") {
+		const typeValue = input.getAttribute("name");
+		const typeInput = input.getAttribute("type");
+
+		if (typeInput === "file") {
+			input.addEventListener("change", (e) => {
+				const uploadedImage = e.target.files[0];
+
+				console.log(uploadedImage);
+
+				newProject[typeValue] = uploadedImage;
+
+				// 	const uploadedImage = document.querySelector(".uploaded-image");
+				// 	let loadedImage = e.target.files[0];
+
+				// 	let fileReader = new FileReader();
+
+				// 	// générer l'url correct de l'image chargé
+				// 	fileReader.onload = (e) => {
+				// 		uploadedImage.src = e.target.result;
+				// 	};
+
+				// 	fileReader.readAsDataURL(loadedImage);
+
+				// 	newProject[typeValue] = e.target.files[0];
+			});
+		} else if (typeInput === "text") {
 			input.addEventListener("input", (e) => {
-				console.log(e.target.value);
+				newProject[typeValue] = e.target.value;
 			});
 		} else {
 			input.addEventListener("change", (e) => {
-				console.log(e.target.value);
+				newProject[typeValue] = e.target.value;
 			});
 		}
 	});
+
+	// fonction fetch pour envoyer les données
+
+	const newProjectForm = document.querySelector(
+		".edit-projects__add-photo-form",
+	);
+
+	newProjectForm.addEventListener("submit", (e) => {
+		e.preventDefault();
+		console.log(newProject);
+
+		fetch("http://localhost:5678/api/works", {
+			method: "post",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${loginToken}`,
+			},
+			body: JSON.stringify(newProject),
+		})
+			.then((response) => {
+				if (!response.ok) {
+					console.log(response);
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	});
+
+	// remove project function
+
+	const removeProjectBtn = document.querySelectorAll(".remove-project-btn");
+
+	console.log(removeProjectBtn);
+
+	const projectId = 15;
+
+	const deleteUrl = `http://localhost:5678/api/works/${projectId}`;
+};
+
+const removeProject = (url, projectId, loginToken) => {
+	fetch(url, {
+		method: "delete",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${loginToken}`,
+		},
+	})
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data);
+		})
+		.catch((error) => {
+			alert("Une erreur s'est produite");
+		});
 };
 
 modalActions();
-
-const onInput = (e) => {
-	console.log(e);
-};
