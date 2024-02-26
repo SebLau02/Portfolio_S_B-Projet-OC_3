@@ -19,8 +19,7 @@ const isUserLoggedCheck = () => {
 			item.classList.add("active");
 		});
 
-		filterContainer.style = "visibility: hidden;";
-		filterContainer.setAttribute("aria-hidden", "true");
+		filterContainer.style = "display: none;";
 	}
 };
 isUserLoggedCheck();
@@ -230,8 +229,6 @@ const deleteProjectRequest = async (projectId) => {
 
 //---------------------------------------------
 
-getProjects();
-
 //---------------------------------------------
 
 const loginAction = () => {
@@ -386,23 +383,6 @@ const modalActions = () => {
 		displayChoosedImage();
 	});
 
-	const displayChoosedImage = () => {
-		const uploadedImage = document.querySelector(
-			".add-photo-form__uploaded-image",
-		);
-
-		const inputFile =
-			newProjectForm.querySelector("input[type=file]").files;
-
-		let fileReader = new FileReader();
-
-		fileReader.onload = (e) => {
-			uploadedImage.src = e.target.result;
-			uploadedImage.classList.add("visible");
-		};
-		fileReader.readAsDataURL(inputFile[0]);
-	};
-
 	newProjectForm.addEventListener("submit", (e) => {
 		e.preventDefault();
 
@@ -413,6 +393,24 @@ const modalActions = () => {
 };
 
 //---------------------------------------------
+
+const displayChoosedImage = () => {
+	const uploadedImage = document.querySelector(
+		".add-photo-form__uploaded-image",
+	);
+	const addImageSpan = document.querySelector(".image-label__span");
+
+	const inputFile = newProjectForm.querySelector("input[type=file]").files;
+
+	let fileReader = new FileReader();
+
+	fileReader.onload = (e) => {
+		uploadedImage.src = e.target.result;
+		uploadedImage.classList.add("visible");
+		addImageSpan.classList.add("hidden");
+	};
+	fileReader.readAsDataURL(inputFile[0]);
+};
 
 const postProjectRequest = async (formData) => {
 	const postUrl = `http://localhost:5678/api/works`;
@@ -453,6 +451,6 @@ async function crudRequest(url, options = {}) {
 }
 
 //---------------------------------------------
-
+getProjects();
 loginAction();
 modalActions();
