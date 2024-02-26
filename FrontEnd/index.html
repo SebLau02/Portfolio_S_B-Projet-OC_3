@@ -206,7 +206,7 @@
 					<h3>Ajout photo</h3>
 
 					<form
-						action="submit"
+						action=""
 						method="post"
 						class="edit-projects__add-photo-form edit-projects__section-main"
 					>
@@ -229,7 +229,9 @@
 								/>
 							</svg>
 
-							<span>+ Ajouter photo</span>
+							<span class="image-label__span"
+								>+ Ajouter photo</span
+							>
 
 							<p>jpg, png : 4mo max</p>
 
@@ -241,7 +243,11 @@
 								class="required-value"
 							/>
 
-							<img src="" alt="" class="uploaded-image" />
+							<img
+								src=""
+								alt="choosen image"
+								class="add-photo-form__uploaded-image"
+							/>
 						</label>
 
 						<label for="uploaded-file-title">
@@ -263,15 +269,12 @@
 								id="category"
 								class="required-value"
 							>
-								<option value="0"></option>
-								<option value="1">Objets</option>
-								<option value="2">Appartements</option>
-								<option value="3">Hotels & restaurants</option>
+								<option value=""></option>
 							</select>
 						</label>
 						<button
 							type="submit"
-							class="add-photo-form__submit-btn"
+							class="add-photo-form__submit-btn active"
 						>
 							Valider
 						</button>

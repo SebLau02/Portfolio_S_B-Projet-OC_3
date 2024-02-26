@@ -8,6 +8,7 @@ let loginToken = sessionStorage.loginToken ? sessionStorage.loginToken : null;
 let projectsFromApiData = new Array();
 
 //---------------------------------------------
+
 const isEditionMode = document.querySelectorAll(".is-edition-mode");
 
 const isUserLoggedCheck = () => {
@@ -33,8 +34,10 @@ const extractDataFromApi = (data) => {
 		createProject(project);
 
 		//créer la liste de catégorie
-		if (!categories.includes(project.category.name)) {
-			categories.push(project.category.name);
+		if (
+			categories.every((category) => category.id !== project.category.id)
+		) {
+			categories.push(project.category);
 		}
 	});
 
@@ -42,7 +45,18 @@ const extractDataFromApi = (data) => {
 	//en prévoyance de l'ajout de type dans le futur
 	categories.forEach((category) => {
 		createFilter(category);
+		createModalCategoryOption(category);
 	});
+};
+
+const createModalCategoryOption = (category) => {
+	const modalSelect = document.querySelector("#category");
+
+	const newOption = document.createElement("option");
+	newOption.value = category.id;
+	newOption.innerText = category.name;
+
+	modalSelect.appendChild(newOption);
 };
 
 const handleFilterSelection = () => {
@@ -140,12 +154,13 @@ const createFilter = (category) => {
 
 	newFilter.classList.add("filter");
 	newFilter.classList.add("active");
-	newFilter.innerText = category;
+	newFilter.innerText = category.name;
 
 	filterContainer.appendChild(newFilter);
 };
 
 //---------------------------------------------
+
 const getProjects = async () => {
 	try {
 		const projectsData = await crudRequest(
@@ -159,13 +174,15 @@ const getProjects = async () => {
 
 		const removeProjectBtn = document.querySelectorAll(
 			".remove-project-btn",
-		);
+		); // query selector ici car ces btn sont crée dans extractDataFromApi
 
 		removeProjectBtn.forEach((button) => {
 			button.addEventListener("click", () => {
 				const projectId = button.getAttribute("aria-projectid");
-				deleteProject(projectId);
 
+				deleteProjectRequest(projectId); // ici car besoin des removeProjectBtn et des id qui leur sont associé
+
+				// retirer le projet supprimé de la main page
 				projects.forEach((project) => {
 					if (project.getAttribute("aria-projectid") == projectId) {
 						project.remove();
@@ -177,6 +194,41 @@ const getProjects = async () => {
 		console.log(error);
 	}
 };
+
+//---------------------------------------------
+
+const deleteProjectRequest = async (projectId) => {
+	const deleteUrl = `http://localhost:5678/api/works/${projectId}`;
+
+	const options = {
+		method: "delete",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${loginToken}`,
+		},
+	};
+
+	const modalGalleryImages = document.querySelectorAll(
+		".modal-gallery-figure",
+	);
+
+	try {
+		const deleteRequest = await crudRequest(deleteUrl, options);
+
+		//retirer le projet supprimé de la gallerie modale
+		modalGalleryImages.forEach((figure) => {
+			if (figure.getAttribute("aria-projectid") == projectId) {
+				figure.remove();
+			}
+		});
+
+		alert(deleteRequest);
+	} catch (error) {
+		alert("Une erreur est survenue");
+	}
+};
+
+//---------------------------------------------
 
 getProjects();
 
@@ -270,7 +322,6 @@ const modalActions = () => {
 	const sendNewProjectBtn = document.querySelector(
 		".edit-projects__add-photo-form > button",
 	);
-	const requiredValues = document.querySelectorAll(".required-value");
 	const editProjectSection = document.querySelectorAll(
 		".edit-projects__section ",
 	);
@@ -304,112 +355,61 @@ const modalActions = () => {
 		backToModalGalleryBtn.classList.remove("active");
 	});
 
-	// permet de récupérer les données entrée
-	requiredValues.forEach((input) => {
-		const typeValue = input.getAttribute("name");
-		const typeInput = input.getAttribute("type");
-
-		if (typeInput === "file") {
-			input.addEventListener("change", (e) => {
-				const uploadedImage = e.target.files[0];
-
-				newProject[typeValue] = uploadedImage;
-
-				// 	const uploadedImage = document.querySelector(".uploaded-image");
-				// 	let loadedImage = e.target.files[0];
-
-				// 	let fileReader = new FileReader();
-
-				// 	// générer l'url correct de l'image chargé
-				// 	fileReader.onload = (e) => {
-				// 		uploadedImage.src = e.target.result;
-				// 	};
-
-				// 	fileReader.readAsDataURL(loadedImage);
-
-				// 	newProject[typeValue] = e.target.files[0];
-			});
-		} else if (typeInput === "text") {
-			input.addEventListener("input", (e) => {
-				newProject[typeValue] = e.target.value;
-			});
-		} else {
-			input.addEventListener("change", (e) => {
-				newProject[typeValue] = e.target.value;
-			});
-		}
-	});
-
 	// fonction fetch pour envoyer les données
 
 	const newProjectForm = document.querySelector(
 		".edit-projects__add-photo-form",
 	);
 
+	const addPhotoFormBtn = document.querySelector(
+		".add-photo-form__submit-btn",
+	);
+
+	// addPhotoFormBtn.removeAttribute("disabled");
+	newProjectForm.addEventListener("change", () => {
+		// Vérification des champs requis
+		const inputs = newProjectForm.querySelectorAll(".required-value");
+
+		const isFormValid = Array.from(inputs).every(
+			(input) => input.value.trim() !== "",
+		);
+
+		// Activation ou désactivation du bouton en fonction de la validité du formulaire
+		if (isFormValid) {
+			addPhotoFormBtn.removeAttribute("disabled");
+			addPhotoFormBtn.classList.remove("active");
+		} else {
+			addPhotoFormBtn.setAttribute("disabled", "disabled");
+			addPhotoFormBtn.classList.add("active");
+		}
+
+		displayChoosedImage();
+	});
+
+	const displayChoosedImage = () => {
+		const uploadedImage = document.querySelector(
+			".add-photo-form__uploaded-image",
+		);
+
+		const inputFile =
+			newProjectForm.querySelector("input[type=file]").files;
+
+		let fileReader = new FileReader();
+
+		fileReader.onload = (e) => {
+			uploadedImage.src = e.target.result;
+			uploadedImage.classList.add("visible");
+		};
+		fileReader.readAsDataURL(inputFile[0]);
+	};
+
 	newProjectForm.addEventListener("submit", (e) => {
 		e.preventDefault();
 
-		console.log(new FormData(newProjectForm));
-
-		const formData = new FormData(newProjectForm);
+		const formData = new FormData(e.target);
 
 		postProjectRequest(formData);
-
-		// fetch("http://localhost:5678/api/works", {
-		// 	method: "post",
-		// 	headers: {
-		// 		"Content-Type": "application/json",
-		// 		Authorization: `Bearer ${loginToken}`,
-		// 	},
-		// 	body: formData,
-		// })
-		// 	.then((response) => {
-		// 		if (!response.ok) {
-		// 			console.log(response);
-		// 		}
-		// 		return response.json();
-		// 	})
-		// 	.then((data) => {
-		// 		console.log(data);
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log(error);
-		// 	});
 	});
-
-	// remove project function
-};
-
-//---------------------------------------------
-
-const deleteProject = async (projectId) => {
-	const deleteUrl = `http://localhost:5678/api/works/${projectId}`;
-
-	const options = {
-		method: "delete",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${loginToken}`,
-		},
-	};
-
-	const modalGalleryImages = document.querySelectorAll(
-		".modal-gallery-figure",
-	);
-
-	try {
-		const deleteRequest = await crudRequest(deleteUrl, options);
-
-		modalGalleryImages.forEach((figure) => {
-			if (figure.getAttribute("aria-projectid") == projectId) {
-				figure.remove();
-			}
-		});
-
-		alert(deleteRequest);
-	} catch (error) {
-		alert("Une erreur est survenue");
-	}
 };
 
 //---------------------------------------------
@@ -419,7 +419,6 @@ const postProjectRequest = async (formData) => {
 	const options = {
 		method: "post",
 		headers: {
-			"Content-Type": "application/json",
 			Authorization: `Bearer ${loginToken}`,
 		},
 		body: formData,
@@ -427,7 +426,8 @@ const postProjectRequest = async (formData) => {
 
 	try {
 		const serverResponse = await crudRequest(postUrl, options);
-		console.log(serverResponse);
+
+		alert("Projet ajouté avec succès !");
 	} catch (error) {
 		alert("Une erreur est survenue");
 	}
