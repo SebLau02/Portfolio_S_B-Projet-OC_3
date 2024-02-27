@@ -3,13 +3,13 @@ const filterContainer = document.querySelector(".filters-container");
 const editProjectGallery = document.querySelector(
 	".edit-projects__gallery-grid",
 );
-
-let loginToken = sessionStorage.loginToken ? sessionStorage.loginToken : null;
-let projectsFromApiData = new Array();
+const isEditionMode = document.querySelectorAll(".is-edition-mode");
 
 //---------------------------------------------
 
-const isEditionMode = document.querySelectorAll(".is-edition-mode");
+let loginToken = sessionStorage.loginToken ? sessionStorage.loginToken : null;
+
+//---------------------------------------------
 
 const isUserLoggedCheck = () => {
 	// afficher le mode édition
@@ -22,47 +22,79 @@ const isUserLoggedCheck = () => {
 		filterContainer.style = "display: none;";
 	}
 };
-isUserLoggedCheck();
+
 //---------------------------------------------
+const getProjects = async () => {
+	try {
+		const projectsData = await crudRequest(
+			"http://localhost:5678/api/works",
+		);
+		extractDataFromApi(projectsData);
 
-const extractDataFromApi = (data) => {
-	let categories = [];
+		const projects = document.querySelectorAll(".gallery > figure");
 
-	// je parcours le tableau des project
-	data.forEach((project) => {
-		createProject(project);
+		handleFilterSelection(projects);
+		removeProjectFromModaleGallery(projects);
+	} catch (error) {
+		console.log(error);
+	}
+};
 
-		//créer la liste de catégorie
-		if (
-			categories.every((category) => category.id !== project.category.id)
-		) {
-			categories.push(project.category);
-		}
-	});
+const removeProjectFromModaleGallery = (projects) => {
+	const removeProjectBtn = document.querySelectorAll(".remove-project-btn"); // query selector ici car ces btn sont crée dans extractDataFromApi
 
-	//permet de créer les button filtre dynamiquement en js,
-	//en prévoyance de l'ajout de type dans le futur
-	categories.forEach((category) => {
-		createFilter(category);
-		createModalCategoryOption(category);
+	removeProjectBtn.forEach((button) => {
+		button.addEventListener("click", () => {
+			const projectId = button.getAttribute("aria-projectid");
+
+			deleteProjectRequest(projectId); // ici car besoin des removeProjectBtn et des id qui leur sont associé
+
+			// retirer le projet supprimé de la main page
+			projects.forEach((project) => {
+				if (project.getAttribute("aria-projectid") == projectId) {
+					project.remove();
+				}
+			});
+		});
 	});
 };
 
-const createModalCategoryOption = (category) => {
-	const modalSelect = document.querySelector("#category");
+const deleteProjectRequest = async (projectId) => {
+	const deleteUrl = `http://localhost:5678/api/works/${projectId}`;
 
-	const newOption = document.createElement("option");
-	newOption.value = category.id;
-	newOption.innerText = category.name;
+	const options = {
+		method: "delete",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${loginToken}`,
+		},
+	};
 
-	modalSelect.appendChild(newOption);
+	const modalGalleryImages = document.querySelectorAll(
+		".modal-gallery-figure",
+	);
+
+	try {
+		const deleteRequest = await crudRequest(deleteUrl, options);
+
+		//retirer le projet supprimé de la gallerie modale
+		modalGalleryImages.forEach((figure) => {
+			if (figure.getAttribute("aria-projectid") == projectId) {
+				figure.remove();
+			}
+		});
+
+		alert(deleteRequest);
+	} catch (error) {
+		alert("Une erreur est survenue");
+	}
 };
 
-const handleFilterSelection = () => {
+const handleFilterSelection = (projects) => {
 	const filters = document.querySelectorAll(".filter");
 	// comme je rajoute mes filtres et projets dynamiquement avec
 	// js, je les queryselector ici, une fois qu'ils sont
-	// tous présent dans le document
+	// tous présent dans le DOM
 
 	filters.forEach((filter, index) => {
 		// filtrage des projects en fonction des filtres
@@ -97,7 +129,48 @@ const handleFilterSelection = () => {
 	});
 };
 
-//---------------------------------------------
+const extractDataFromApi = (data) => {
+	let categories = [];
+
+	// je parcours le tableau des project
+	data.forEach((project) => {
+		createProject(project);
+
+		//créer la liste de catégorie
+		if (
+			categories.every((category) => category.id !== project.category.id)
+		) {
+			categories.push(project.category);
+		}
+	});
+
+	//permet de créer les button filtre dynamiquement en js,
+	//en prévoyance de l'ajout de type dans le futur
+	categories.forEach((category) => {
+		createFilter(category);
+		createModalCategoryOption(category);
+	});
+};
+
+const createFilter = (category) => {
+	const newFilter = document.createElement("button");
+
+	newFilter.classList.add("filter");
+	newFilter.classList.add("active");
+	newFilter.innerText = category.name;
+
+	filterContainer.appendChild(newFilter);
+};
+
+const createModalCategoryOption = (category) => {
+	const modalSelect = document.querySelector("#category");
+
+	const newOption = document.createElement("option");
+	newOption.value = category.id;
+	newOption.innerText = category.name;
+
+	modalSelect.appendChild(newOption);
+};
 
 const createProject = (project) => {
 	//--------- cette section est réservé à la gallerie principale -------------
@@ -146,94 +219,8 @@ const createProject = (project) => {
 	editProjectGallery.appendChild(modalFigure);
 };
 
-//---------------------------------------------
-
-const createFilter = (category) => {
-	const newFilter = document.createElement("button");
-
-	newFilter.classList.add("filter");
-	newFilter.classList.add("active");
-	newFilter.innerText = category.name;
-
-	filterContainer.appendChild(newFilter);
-};
-
-//---------------------------------------------
-
-const getProjects = async () => {
-	try {
-		const projectsData = await crudRequest(
-			"http://localhost:5678/api/works",
-		);
-		extractDataFromApi(projectsData);
-
-		const projects = document.querySelectorAll(".gallery > figure");
-
-		handleFilterSelection();
-
-		const removeProjectBtn = document.querySelectorAll(
-			".remove-project-btn",
-		); // query selector ici car ces btn sont crée dans extractDataFromApi
-
-		removeProjectBtn.forEach((button) => {
-			button.addEventListener("click", () => {
-				const projectId = button.getAttribute("aria-projectid");
-
-				deleteProjectRequest(projectId); // ici car besoin des removeProjectBtn et des id qui leur sont associé
-
-				// retirer le projet supprimé de la main page
-				projects.forEach((project) => {
-					if (project.getAttribute("aria-projectid") == projectId) {
-						project.remove();
-					}
-				});
-			});
-		});
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-//---------------------------------------------
-
-const deleteProjectRequest = async (projectId) => {
-	const deleteUrl = `http://localhost:5678/api/works/${projectId}`;
-
-	const options = {
-		method: "delete",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${loginToken}`,
-		},
-	};
-
-	const modalGalleryImages = document.querySelectorAll(
-		".modal-gallery-figure",
-	);
-
-	try {
-		const deleteRequest = await crudRequest(deleteUrl, options);
-
-		//retirer le projet supprimé de la gallerie modale
-		modalGalleryImages.forEach((figure) => {
-			if (figure.getAttribute("aria-projectid") == projectId) {
-				figure.remove();
-			}
-		});
-
-		alert(deleteRequest);
-	} catch (error) {
-		alert("Une erreur est survenue");
-	}
-};
-
-//---------------------------------------------
-
-//---------------------------------------------
-
 const loginAction = () => {
 	const loginLink = document.querySelector("nav > ul > :nth-child(3)");
-	const sections = document.querySelectorAll("section");
 	const loginForm = document.querySelector(".login-form");
 	const mainSections = document.querySelectorAll(".main-section");
 	const navLinks = document.querySelectorAll(".header-bar > nav ul li a");
@@ -315,27 +302,23 @@ const modalActions = () => {
 		".edit-projects__toggle-modale-btn",
 	);
 	const addPhotoBtn = document.querySelector(".edit-projects__add-photo-btn");
-	const editProjectsModal = document.querySelector(".edit-projects__modal");
-	const sendNewProjectBtn = document.querySelector(
-		".edit-projects__add-photo-form > button",
-	);
-	const editProjectSection = document.querySelectorAll(
-		".edit-projects__section ",
-	);
-
 	const backToModalGalleryBtn = document.querySelector(
 		".edits-projects__back-to-gallery-btn",
 	);
 
-	let newProject = { image: null, title: null, category: null };
+	const editProjectsModal = document.querySelector(".edit-projects__modal");
+
+	const editProjectSection = document.querySelectorAll(
+		".edit-projects__section ",
+	);
 
 	// ouvrir la modale
 	toggleModalBtn.forEach((button) => {
 		button.addEventListener("click", () => {
-			editProjectsModal.classList.toggle("active"); // ouvrir la modale quand on clique sur modifier
-			editProjectSection[1].classList.remove("active"); // activer la section gallerie
+			editProjectsModal.classList.toggle("active"); // ouvrir/fermer la modale quand on clique sur "modifier" et "fermer"
+			editProjectSection[1].classList.remove("active"); // desactiver la section "ajout photo"
 			editProjectSection[0].classList.add("active"); // activer la section gallerie
-			backToModalGalleryBtn.classList.remove("active");
+			backToModalGalleryBtn.classList.remove("active"); // on cache le bouton retour à la gallerie
 		});
 	});
 
@@ -343,13 +326,13 @@ const modalActions = () => {
 	addPhotoBtn.addEventListener("click", () => {
 		editProjectSection[0].classList.remove("active"); // ferme la gallerie
 		editProjectSection[1].classList.add("active"); // j'ouvre le formulaire d'ajout
-		backToModalGalleryBtn.classList.add("active");
+		backToModalGalleryBtn.classList.add("active"); // le bouton retour est disponible
 	});
 
 	backToModalGalleryBtn.addEventListener("click", () => {
 		editProjectSection[0].classList.add("active"); // ouvre la gallerie
 		editProjectSection[1].classList.remove("active"); // fermer le formulaire d'ajout
-		backToModalGalleryBtn.classList.remove("active");
+		backToModalGalleryBtn.classList.remove("active"); // retour n'est plus disponible
 	});
 
 	// fonction fetch pour envoyer les données
@@ -432,6 +415,7 @@ const postProjectRequest = async (formData) => {
 };
 
 //---------------------------------------------
+
 async function crudRequest(url, options = {}) {
 	try {
 		const response = await fetch(url, options);
@@ -451,6 +435,8 @@ async function crudRequest(url, options = {}) {
 }
 
 //---------------------------------------------
+
+isUserLoggedCheck();
 getProjects();
 loginAction();
 modalActions();
