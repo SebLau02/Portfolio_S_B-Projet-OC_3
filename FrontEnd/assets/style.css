@@ -160,6 +160,16 @@ button {
 	width: 22px;
 }
 
+.log-container .logout-link {
+	display: none;
+}
+.header.active .login-link {
+	display: none;
+}
+.header.active .logout-link {
+	display: block;
+}
+
 /* --------------------------------- */
 
 .intro-portfolio-contact.active {
@@ -174,8 +184,6 @@ button {
 	margin-bottom: 115px;
 }
 
-#introduction figure {
-}
 #introduction img {
 	display: block;
 	margin: auto;
@@ -196,19 +204,27 @@ button {
 }
 
 .title_edit-project {
+	width: fit-content;
+	margin: 0 auto 60px;
+
+	transform: translateX(17%);
+
 	gap: 30px;
 }
+.title_edit-project > h2 {
+	line-height: 19px;
+}
 .title_edit-project > .edit-project__open-modal-btn {
-	display: none;
-
 	border: none;
+
+	visibility: hidden;
 
 	background: none;
 
 	color: #000000;
 }
 .title_edit-project > .edit-project__open-modal-btn.active {
-	display: block;
+	visibility: visible;
 }
 
 .edit-project__open-modal-btn > svg {
@@ -219,8 +235,6 @@ button {
 
 .filters-container {
 	gap: 10px;
-
-	margin: 50px;
 }
 
 .filters-container > .filter.active {
@@ -231,20 +245,24 @@ button {
 .filter {
 	min-width: 100px;
 
+	font-size: 16px;
+
 	line-height: 1;
 
-	padding: 10.5px 20px;
+	padding: 9.5px;
 }
 /* --------------------------------- */
 
 .gallery {
 	display: grid;
 	grid-template-columns: repeat(3, 305px);
-	grid-gap: 20px;
+	grid-gap: 18px;
 
 	width: fit-content;
 
 	margin: auto;
+
+	padding-top: 50px;
 }
 
 .gallery img {
@@ -253,7 +271,7 @@ button {
 
 .gallery > figure > figcaption {
 	font-size: 13px;
-	margin-top: 5px;
+	margin-top: 3px;
 }
 
 /* --------------------------------- */
@@ -295,7 +313,7 @@ button {
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 #contact label {
-	margin: 2.2em 0 1em;
+	margin: 2.2em 0 0.6em;
 	font-weight: 500;
 }
 #contact textarea {
@@ -304,9 +322,6 @@ button {
 }
 
 #contact > form .send-message-btn {
-	max-width: 179px;
-	width: 100%;
-
 	margin: 40px auto;
 }
 
@@ -381,7 +396,12 @@ button {
 
 	font-weight: 600;
 }
-
+.login-form > button,
+#contact > form .send-message-btn {
+	padding: 8.5px;
+	width: 100%;
+	max-width: 179px;
+}
 /* ----------------modale----------------- */
 
 .edit-projects__modal {
@@ -669,6 +689,6 @@ button {
 .add-photo-form__uploaded-image.visible {
 	opacity: 1;
 }
-.add-photo-form__uploaded-image.visible ~ .image-label__span {
+.image-label__span.hidden {
 	opacity: 0;
 }
