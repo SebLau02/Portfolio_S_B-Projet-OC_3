@@ -423,11 +423,14 @@ button {
 	display: flex;
 }
 .modal__main-container {
+	position: absolute;
+	top: 23%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
 	width: 100%;
 	max-width: 630px;
-	max-height: 688px;
-
-	transform: translateY(95%);
+	min-height: 688px;
 
 	border-radius: 10px;
 
@@ -527,7 +530,7 @@ button {
 	line-height: 1;
 
 	padding: 10px 0;
-	margin: 45px 0 0;
+	/*	margin: 45px 0 0;*/
 }
 .edit-projects__section-main::after {
 	position: absolute;
@@ -543,10 +546,10 @@ button {
 	background-color: var(--light-grey);
 }
 .edit-projects__projects-photos-container::after {
-	bottom: 0;
+	bottom: 4%;
 }
 .edit-projects__projects-photos-container > .edit-projects__add-photo-btn {
-	transform: translateY(70px);
+	/*	transform: translateY(70px);*/
 }
 
 .edit-projects__gallery-grid img {
