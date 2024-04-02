@@ -548,6 +548,7 @@ button {
 .edit-projects__projects-photos-container::after {
 	bottom: 4%;
 }
+
 .edit-projects__projects-photos-container > .edit-projects__add-photo-btn {
 	/*	transform: translateY(70px);*/
 }
