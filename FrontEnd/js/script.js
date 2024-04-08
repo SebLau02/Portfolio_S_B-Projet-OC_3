@@ -4,7 +4,9 @@ const editProjectGallery = document.querySelector(
 	".edit-projects__gallery-grid",
 )
 const isEditionMode = document.querySelectorAll(".is-edition-mode")
-
+const loginLink = document.querySelector("nav > ul > li > .login-link")
+const mainSections = document.querySelectorAll(".main-section")
+const footer = document.querySelector(".footer")
 //---------------------------------------------
 
 let loginToken =
@@ -181,24 +183,20 @@ const deleteProjectRequest = async (projectId) => {
 //---------------------------------------------
 
 const logInOutAction = () => {
-	const loginLink = document.querySelector("nav > ul > li > .login-link")
 	const loginForm = document.querySelector(".login-form")
-	const mainSections = document.querySelectorAll(".main-section")
 	const navLinks = document.querySelectorAll(".header-bar > nav ul li a")
-	const footer = document.querySelector(".footer")
 
 	// naviguer sur les liens
 	navLinks.forEach((link) => {
 		link.addEventListener("click", () => {
 			if (link.textContent === "login") {
-				displayLoginPage(mainSections, link, footer)
+				displayLoginPage()
 			} else {
 				if (link.textContent === "logout") {
 					sessionStorage.removeItem("loginToken") //si on clique sur logout on retire le token de la session
 					location.reload() // et on force le refesh de la page afin de retrouver la page "public"
 				}
-
-				displayMainPage(mainSections, link, footer, loginLink)
+				displayMainPage()
 			}
 		})
 	})
@@ -217,47 +215,33 @@ const logInOutAction = () => {
 }
 
 const displayLoginPage = () => {
-	const mainSections = document.querySelectorAll(".main-section")
-	const footer = document.querySelector(".footer")
-	const loginLink = document.querySelector("nav > ul > li > .login-link")
-
-	//si on clique sur le lien login
-	// la main page diplay none et la page login display block
 	mainSections[0].classList.add("active")
 	mainSections[1].classList.add("active")
 	loginLink.style = "font-weight:600;" // permet de mettre le lien "login" en gras
 	footer.classList.add("active")
 }
 const displayMainPage = () => {
-	const mainSections = document.querySelectorAll(".main-section")
-	const footer = document.querySelector(".footer")
-	const loginLink = document.querySelector("nav > ul > li > .login-link")
-
 	mainSections[0].classList.remove("active")
 	mainSections[1].classList.remove("active")
 	loginLink.style = "font-weight:none;"
 	footer.classList.remove("active")
 }
+
 function handleUrlChange() {
 	const currentUrl = window.location.hash
 	if (currentUrl === "#login") {
 		displayLoginPage()
-		console.log("display login page")
-
-		// mainSections[1].classList.add("active")
 	} else {
 		displayMainPage()
-		console.log("display main page")
 	}
 }
 
 const pagesDisplayer = () => {
-	window.addEventListener("popstate", handleUrlChange)
+	window.addEventListener("hashchange", handleUrlChange)
 
 	// ici j'ai deux fonction qui permettent de display les 2 pages
 	// je les utilisent lors du clic sur les nav et en fonction de ce
 	// qu'il y a dans l'url
-	// ameliorer: éviter la duplication de code
 }
 
 // fonction de connection
