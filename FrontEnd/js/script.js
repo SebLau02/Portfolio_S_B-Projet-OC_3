@@ -35,21 +35,6 @@ const getProjects = async () => {
 	handleFilterSelection(projectsList)
 }
 
-const deleteProjectRequest = async (projectId) => {
-	const url = `http://localhost:5678/api/works/${projectId}`
-	const request = "deleteProject"
-	const deleteProjectResponse = await crudRequest(url, request)
-	const modalGalleryImages = document.querySelectorAll(
-		".modal-gallery-figure",
-	)
-	//retirer le projet supprimé de la gallerie modale
-	modalGalleryImages.forEach((figure) => {
-		if (figure.getAttribute("aria-projectid") == projectId) {
-			figure.remove()
-		}
-	})
-}
-
 const handleFilterSelection = (projectsList) => {
 	const filters = document.querySelectorAll(".filter")
 	// comme je rajoute mes filtres et projets dynamiquement avec
@@ -178,6 +163,21 @@ const createProjectToModalGallery = (newImg, project) => {
 	editProjectGallery.appendChild(modalFigure)
 }
 
+const deleteProjectRequest = async (projectId) => {
+	const url = `http://localhost:5678/api/works/${projectId}`
+	const request = "deleteProject"
+	const deleteProjectResponse = await crudRequest(url, request)
+	const modalGalleryImages = document.querySelectorAll(
+		".modal-gallery-figure",
+	)
+	//retirer le projet supprimé de la gallerie modale
+	modalGalleryImages.forEach((figure) => {
+		if (figure.getAttribute("aria-projectid") == projectId) {
+			figure.remove()
+		}
+	})
+}
+
 //---------------------------------------------
 
 const logInOutAction = () => {
@@ -191,24 +191,14 @@ const logInOutAction = () => {
 	navLinks.forEach((link) => {
 		link.addEventListener("click", () => {
 			if (link.textContent === "login") {
-				//si on clique sur le lien login
-				// la main page diplay none et la page login display block
-				mainSections[0].classList.add("active")
-				mainSections[1].classList.add("active")
-				link.style = "font-weight:600;" // permet de mettre le lien "login" en gras
-				footer.classList.add("active")
+				displayLoginPage(mainSections, link, footer)
 			} else {
 				if (link.textContent === "logout") {
-					//si on clique sur logout on retire le token de la session
-					// et on force le refesh de la page afin de retrouver la page "public"
-					sessionStorage.removeItem("loginToken")
-
-					location.reload()
+					sessionStorage.removeItem("loginToken") //si on clique sur logout on retire le token de la session
+					location.reload() // et on force le refesh de la page afin de retrouver la page "public"
 				}
-				mainSections[0].classList.remove("active")
-				mainSections[1].classList.remove("active")
-				loginLink.style = "font-weight:none;"
-				footer.classList.remove("active")
+
+				displayMainPage(mainSections, link, footer, loginLink)
 			}
 		})
 	})
@@ -224,6 +214,50 @@ const logInOutAction = () => {
 
 		loginRequest(loginFormData, mainSections, loginLink, footer)
 	})
+}
+
+const displayLoginPage = () => {
+	const mainSections = document.querySelectorAll(".main-section")
+	const footer = document.querySelector(".footer")
+	const loginLink = document.querySelector("nav > ul > li > .login-link")
+
+	//si on clique sur le lien login
+	// la main page diplay none et la page login display block
+	mainSections[0].classList.add("active")
+	mainSections[1].classList.add("active")
+	loginLink.style = "font-weight:600;" // permet de mettre le lien "login" en gras
+	footer.classList.add("active")
+}
+const displayMainPage = () => {
+	const mainSections = document.querySelectorAll(".main-section")
+	const footer = document.querySelector(".footer")
+	const loginLink = document.querySelector("nav > ul > li > .login-link")
+
+	mainSections[0].classList.remove("active")
+	mainSections[1].classList.remove("active")
+	loginLink.style = "font-weight:none;"
+	footer.classList.remove("active")
+}
+function handleUrlChange() {
+	const currentUrl = window.location.hash
+	if (currentUrl === "#login") {
+		displayLoginPage()
+		console.log("display login page")
+
+		// mainSections[1].classList.add("active")
+	} else {
+		displayMainPage()
+		console.log("display main page")
+	}
+}
+
+const pagesDisplayer = () => {
+	window.addEventListener("popstate", handleUrlChange)
+
+	// ici j'ai deux fonction qui permettent de display les 2 pages
+	// je les utilisent lors du clic sur les nav et en fonction de ce
+	// qu'il y a dans l'url
+	// ameliorer: éviter la duplication de code
 }
 
 // fonction de connection
@@ -366,9 +400,7 @@ const addNewProject = () => {
 
 	newProjectForm.addEventListener("submit", (e) => {
 		e.preventDefault()
-
 		const formData = new FormData(e.target)
-
 		postProjectRequest(formData)
 	})
 }
@@ -443,8 +475,9 @@ const mainFunction = () => {
 	getProjects()
 	logInOutAction()
 	modalActions()
+	pagesDisplayer()
 }
 
-window.addEventListener("load", function () {
+window.addEventListener("DOMContentLoaded", function () {
 	mainFunction()
 })
