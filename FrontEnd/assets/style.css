@@ -423,10 +423,10 @@ button {
 	display: flex;
 }
 .modal__main-container {
-	position: absolute;
-	top: 23%;
+	position: fixed;
+	top: 14%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, 0);
 
 	width: 100%;
 	max-width: 630px;
@@ -453,6 +453,7 @@ button {
 .edit-projects__gallery-section.active,
 .edit-projects__add-photo-section.active {
 	display: flex;
+	padding-bottom: 40px;
 }
 
 /* -----------------bouton retour et fermet modale---------------- */
@@ -530,11 +531,12 @@ button {
 	line-height: 1;
 
 	padding: 10px 0;
-	/*	margin: 45px 0 0;*/
+}
+.edit-projects__add-photo-btn {
+	margin-top: 120px;
 }
 .edit-projects__section-main::after {
 	position: absolute;
-	bottom: 70px;
 	left: 0%;
 
 	display: block;
@@ -546,10 +548,10 @@ button {
 	background-color: var(--light-grey);
 }
 .edit-projects__projects-photos-container::after {
-	bottom: 4%;
+	bottom: 14%;
 }
-.edit-projects__projects-photos-container > .edit-projects__add-photo-btn {
-	/*	transform: translateY(70px);*/
+.edit-projects__add-photo-form::after {
+	bottom: 13%;
 }
 
 .edit-projects__gallery-grid img {
@@ -663,10 +665,13 @@ button {
 
 	background-color: #cbd6dc;
 }
-#image-label > p {
+#image-label > .image-label__type {
 	font-size: 10px;
 	line-height: 1;
+	font-weight: 400;
+	align-self: center !important;
 }
+
 #file-upload {
 	opacity: 1;
 	height: 0;
@@ -674,6 +679,7 @@ button {
 
 .add-photo-form__submit-btn {
 	border: none;
+	margin-top: 45px;
 }
 .add-photo-form__submit-btn.active {
 	background-color: #a7a7a7;

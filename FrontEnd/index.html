@@ -52,7 +52,7 @@
 		</header>
 		<main>
 			<div class="main-section intro-portfolio-contact">
-				<section id="introduction">
+				<div id="introduction">
 					<figure>
 						<img
 							src="./assets/images/sophie-bluel.png"
@@ -80,8 +80,8 @@
 							décorateur(trice)
 						</p>
 					</article>
-				</section>
-				<section id="portfolio">
+				</div>
+				<div id="portfolio">
 					<div class="title_edit-project">
 						<h2>Mes projets</h2>
 						<button
@@ -103,15 +103,17 @@
 					</div>
 
 					<div class="filters-container">
-						<button class="filter" category-id="Tous">Tous</button>
+						<button class="filter" data-category-id="Tous">
+							Tous
+						</button>
 					</div>
 
 					<div class="gallery"></div>
-				</section>
+				</div>
 				<section id="contact">
 					<h2>Contact</h2>
 					<p>Vous avez un projet ? Discutons-en !</p>
-					<form action="#" method="post">
+					<form method="post">
 						<label for="name">Nom</label>
 						<input type="text" name="name" id="name" />
 						<label for="email">Email</label>
@@ -129,7 +131,7 @@
 					</form>
 				</section>
 			</div>
-			<section id="login-page" class="main-section login-page">
+			<div id="login-page" class="main-section login-page">
 				<form method="post" class="login-form">
 					<h2>Log In</h2>
 
@@ -158,10 +160,10 @@
 
 					<a href="#">Mot de passe oublié</a>
 				</form>
-			</section>
+			</div>
 		</main>
 
-		<aside
+		<div
 			class="edit-projects__modal"
 			aria-hidden="true"
 			role="dialog"
@@ -213,7 +215,6 @@
 					<h3>Ajout photo</h3>
 
 					<form
-						action=""
 						method="post"
 						class="edit-projects__add-photo-form edit-projects__section-main"
 					>
@@ -240,7 +241,9 @@
 								>+ Ajouter photo</span
 							>
 
-							<p>jpg, png : 4mo max</p>
+							<span class="image-label__type"
+								>jpg, png : 4mo max</span
+							>
 
 							<input
 								type="file"
@@ -251,7 +254,6 @@
 							/>
 
 							<img
-								src=""
 								alt="choosen image"
 								class="add-photo-form__uploaded-image"
 							/>
@@ -276,20 +278,20 @@
 								id="category"
 								class="required-value"
 							>
-								<option value=""></option>
+								<option value="">Choisir une catégories</option>
 							</select>
 						</label>
 						<button
 							type="submit"
 							class="add-photo-form__submit-btn active"
-							disabled="false"
+							disabled="disabled"
 						>
 							Valider
 						</button>
 					</form>
 				</section>
 			</div>
-		</aside>
+		</div>
 
 		<footer class="footer">
 			<nav>
