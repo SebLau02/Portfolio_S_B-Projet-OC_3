@@ -424,7 +424,7 @@ button {
 }
 .modal__main-container {
 	position: fixed;
-	top: 14%;
+	top: 19%;
 	left: 50%;
 	transform: translate(-50%, 0);
 

@@ -9,8 +9,8 @@ const mainSections = document.querySelectorAll(".main-section");
 const footer = document.querySelector(".footer");
 //---------------------------------------------
 
-let loginToken =
-	sessionStorage.loginToken !== undefined ? sessionStorage.loginToken : null;
+const cookieTokenName = "s_b_token";
+let loginToken = getCookie(cookieTokenName);
 
 //---------------------------------------------
 
@@ -20,6 +20,9 @@ const isUserLoggedCheck = () => {
 	if (loginToken) {
 		isEditionMode.forEach((item) => {
 			item.classList.add("active");
+			if (item.getAttribute("disabled")) {
+				item.removeAttribute("disabled");
+			}
 		});
 
 		filterContainer.style = "display: none;";
@@ -193,7 +196,7 @@ const logInOutAction = () => {
 				displayLoginPage();
 			} else {
 				if (link.textContent === "logout") {
-					sessionStorage.removeItem("loginToken"); //si on clique sur logout on retire le token de la session
+					deleteCookie(cookieTokenName); //si on clique sur logout on retire le token de la session
 					location.reload(); // et on force le refesh de la page afin de retrouver la page "public"
 				}
 				displayMainPage();
@@ -244,8 +247,6 @@ const pagesDisplayer = () => {
 	// qu'il y a dans l'url
 };
 
-// fonction de connection
-
 const loginRequest = async (formData, mainSections, loginLink, footer) => {
 	const url = `http://localhost:5678/api/users/login`;
 	const request = "login";
@@ -253,11 +254,9 @@ const loginRequest = async (formData, mainSections, loginLink, footer) => {
 
 	if (apiResponse) {
 		alert("Connection réussie");
-		sessionStorage.setItem("loginToken", apiResponse.token);
-		loginToken = apiResponse.token;
-
+		setCookie(cookieTokenName, apiResponse.token);
+		loginToken = getCookie(cookieTokenName);
 		isUserLoggedCheck();
-
 		//permet de rediriger vers la page principale
 		mainSections[0].classList.remove("active");
 		mainSections[1].classList.remove("active");
@@ -450,6 +449,33 @@ async function crudRequest(url, request, formData = {}) {
 	} catch (error) {
 		alert(error);
 	}
+}
+
+//---------------------------------------------
+
+function setCookie(name, value) {
+	var expires = "";
+	var date = new Date();
+	date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
+	expires = "; expires=" + date.toUTCString();
+	document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(";");
+	for (var i = 0; i < ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) === " ") c = c.substring(1, c.length);
+		if (c.indexOf(nameEQ) === 0)
+			return c.substring(nameEQ.length, c.length);
+	}
+	return null;
+}
+
+function deleteCookie(name) {
+	document.cookie =
+		name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
 //---------------------------------------------
