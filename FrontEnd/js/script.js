@@ -7,6 +7,7 @@ const isEditionMode = document.querySelectorAll(".is-edition-mode");
 const loginLink = document.querySelector("nav > ul > li > .login-link");
 const mainSections = document.querySelectorAll(".main-section");
 const footer = document.querySelector(".footer");
+
 //---------------------------------------------
 
 const cookieTokenName = "s_b_token";
